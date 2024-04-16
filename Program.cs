@@ -5,12 +5,31 @@ namespace PICardPlayer
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Console.WriteLine("Welcome to card game!");
             EquipmentFactoryManager.RegisterFactories();
             GetCards(out Card card1, out Card card2);
+            card1.PrintProperties();
+            card2.PrintProperties();
+            foreach (Skill skill in card1.skills)
+            {
+                if (skill is SkillA1 skillA1)
+                    skillA1.Trigger(card1);
+                if (skill is SkillA2 skillA2)
+                    skillA2.Trigger(card2);
+            }
+            foreach (Skill skill in card2.skills)
+            {
+                if (skill is SkillA1 skillA1)
+                    skillA1.Trigger(card2);
+                if (skill is SkillA2 skillA2)
+                    skillA2.Trigger(card1); 
+            }
             GetFightresults(card1, card2);
+            Console.WriteLine();
+            Console.WriteLine("Press any key to exit!");
+            Console.ReadLine();
             return;
         }
 
@@ -56,8 +75,7 @@ namespace PICardPlayer
             Console.WriteLine("string name, int healthPoint, float firstHand, int type, string skillCodes(split by comma)");
             card2 = GetCardProperties();
             Console.WriteLine();
-            card1.PrintProperties();
-            card2.PrintProperties();
+            
         }
         private static Card GetCardProperties()
         {
@@ -72,7 +90,7 @@ namespace PICardPlayer
             {
                 inline = inline.Trim();
                 string[] strings = inline.Split([' ']);
-                if (strings.Length != 4)
+                if (strings.Length != 5)
                 {
                     Console.WriteLine("Are you kidding me? Please input again!");
                     goto Loop;

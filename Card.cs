@@ -11,7 +11,7 @@ namespace PICardPlayer
         public string name;
         public int healthPoint;
         public int originAttackPoint;
-        public int actualAttackPoint;
+        public int attackPoint;
         public double offensivePoint;
         public double defenceMultiplier;
         public int type;// 0:living; 1:dead; 2:micro;
@@ -22,33 +22,31 @@ namespace PICardPlayer
             this.healthPoint = healthPoint;
             this.offensivePoint = firstHand;
             this.originAttackPoint = (int)Math.Pow(firstHand, 4d);
-            this.actualAttackPoint = this.originAttackPoint;
+            this.attackPoint = this.originAttackPoint;
             this.type = type;
             this.defenceMultiplier = 0;
             this.skills = [];
             string[] skillCodeList = skills.Split([',']);
             foreach (string id in skillCodeList)
             {
-                Skill skill = EquipmentFactoryManager.CreateSkill(id);
+                Skill skill = EquipmentFactoryManager.CreateSkill(id.Trim());
                 AddSkill(skill);
             }
         }
-        public void AddSkill(Skill skill)
+        private void AddSkill(Skill skill)
         {
             skills.Add(skill);
-            if (skill is SkillA skillA)
-                skillA.Trigger(this);
         }
         public void Attacked(Card other)
         {
             int damage;
             if ((type == 1 && other.type == 0) || (type == 2 && other.type == 1) || (type == 0 && other.type == 2))
             {
-                damage = (int)(other.actualAttackPoint * 2 * (1 - defenceMultiplier)); // dominated
+                damage = (int)(other.attackPoint * 2 * (1 - defenceMultiplier)); // dominated
                 Console.WriteLine($"{name} was dominated by {other.name}!");
             }
             else
-                damage = (int)(other.actualAttackPoint * (1 - defenceMultiplier)); // undominated
+                damage = (int)(other.attackPoint * (1 - defenceMultiplier)); // undominated
             Console.WriteLine($"{name} was attacked, whose health point reduced by {damage}!");
             healthPoint -= damage;
             if (healthPoint > 0) Console.WriteLine($"Now {name}'s health point is {healthPoint}!");
